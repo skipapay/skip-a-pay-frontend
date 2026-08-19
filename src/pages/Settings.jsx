@@ -7,9 +7,7 @@ import axios from "util/axios";
 import * as yup from "yup";
 import {
   CloudArrowUpIcon,
-  DocumentDuplicateIcon,
   CheckCircleIcon,
-  InformationCircleIcon,
   TableCellsIcon,
 } from "@heroicons/react/24/outline";
 import "./settings.scss";

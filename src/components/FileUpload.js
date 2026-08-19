@@ -36,7 +36,6 @@ const FileUpload = React.forwardRef(
     const {
       getRootProps,
       getInputProps,
-      isDragAccept,
       isDragReject,
       isDragActive,
     } = useDropzone({

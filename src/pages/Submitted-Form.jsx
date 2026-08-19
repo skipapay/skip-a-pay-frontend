@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactTable from "components/Table";
 import submittedApplications from "api/admin/users";
-import { Button, Dropdown, Spinner } from "react-bootstrap";
+import { Dropdown, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setSubmittedFormsCount } from "features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,6 @@ import {
   TrashIcon,
   MagnifyingGlassIcon,
   ArrowDownTrayIcon,
-  CalendarDaysIcon,
   InboxIcon,
 } from "@heroicons/react/24/outline";
 import "./submittedForm.scss";

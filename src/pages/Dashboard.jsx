@@ -12,7 +12,7 @@ import {
   CloudArrowUpIcon,
   CircleStackIcon,
 } from "@heroicons/react/24/outline";
-import { Col, Row, Button, Spinner } from "react-bootstrap";
+import { Col, Row, Button } from "react-bootstrap";
 import submittedApplications from "api/admin/users";
 import { getLoans } from "api/admin/loans";
 import { useDispatch, useSelector } from "react-redux";

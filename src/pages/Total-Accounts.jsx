@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactTable from "components/Table";
-import { Button, Spinner } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import CustomPagination from "components/Pagination";
 import AccountsDeleteModal from "components/AccountDeleteModal";
 import { getLoans } from "api/admin/loans";
@@ -13,7 +13,6 @@ import {
   MagnifyingGlassIcon,
   CircleStackIcon,
   UserCircleIcon,
-  IdentificationIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
