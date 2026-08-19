@@ -338,7 +338,7 @@ const TotalAccounts = () => {
                       type="number"
                       min={1}
                       max={pageCount}
-                      placeholder="Page"
+                      placeholder="100"
                       className="jump-input"
                       onChange={handleChangePageNumber}
                     />

@@ -389,10 +389,13 @@ const SubmittedForm = () => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleDownload(activeDaysFilter)} className="fw-bold text-primary">
+                  Current Filter View ({activeDaysFilter ? `Last ${activeDaysFilter} Days` : "All Records"})
+                </Dropdown.Item>
+                <Dropdown.Divider />
                 <Dropdown.Item onClick={() => handleDownload(0)}>
                   All Application Records (.CSV)
                 </Dropdown.Item>
-                <Dropdown.Divider />
                 <Dropdown.Item onClick={() => handleDownload(7)}>
                   Last 7 Days Only (.CSV)
                 </Dropdown.Item>
@@ -459,7 +462,7 @@ const SubmittedForm = () => {
                       type="number"
                       min={1}
                       max={pageCount}
-                      placeholder="Page"
+                      placeholder="100"
                       className="jump-input"
                       onChange={handleChangePageNumber}
                     />

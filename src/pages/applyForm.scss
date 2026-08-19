@@ -277,7 +277,8 @@
         }
 
         &.is-valid {
-          border-color: #10b981;
+          border-color: #cbd5e1;
+          background-image: none !important;
         }
       }
 
@@ -353,6 +354,20 @@
           color: #16a34a;
         }
       }
+    }
+
+    .loan-selection-summary-pill {
+      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+      border: 1px solid #ddd6fe;
+      border-radius: 12px;
+      padding: 10px 16px;
+      color: #4c1d95;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     /* Loan Cards Grid */
@@ -731,6 +746,23 @@
         }
       }
     }
+  }
+}
+
+/* Wizard Step Pane Animation */
+.wizard-step-pane {
+  animation: wizardSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes wizardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

@@ -23,7 +23,14 @@ const SubmitFormDeleteModal = ({
         } else {
           toast.success("Submitted application deleted successfully.");
         }
-        getAllUsers({ skip });
+        const searchParams = new URLSearchParams(window.location.search);
+        const queryPayload = {};
+        if (searchParams.get("search")) queryPayload.search = searchParams.get("search");
+        if (searchParams.get("skip")) queryPayload.skip = searchParams.get("skip");
+        if (searchParams.get("limit")) queryPayload.limit = searchParams.get("limit");
+        if (searchParams.get("days")) queryPayload.days = searchParams.get("days");
+
+        getAllUsers(queryPayload);
       } else {
         if (response?.status === 500) {
           toast.error(response.message);

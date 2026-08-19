@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
@@ -22,13 +22,28 @@ import {
   InformationCircleIcon,
   CreditCardIcon,
   SparklesIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/24/solid";
+
+// Helper: Phone Number Auto-Formatter
+const formatPhoneNumber = (value) => {
+  if (!value) return value;
+  const phoneNumber = value.replace(/[^\d]/g, "");
+  const phoneNumberLength = phoneNumber.length;
+  if (phoneNumberLength < 4) return phoneNumber;
+  if (phoneNumberLength < 7) {
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+  }
+  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+};
 
 const ApplyForm = ({ website }) => {
   // Wizard Step State: 1 = Verification, 2 = Loan Selection & Contact, 3 = Confirmation Receipt
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSsn, setShowSsn] = useState(false);
   const [availableLoans, setAvailableLoans] = useState([]);
   const [appliedLoans, setAppliedLoans] = useState([]);
   const [selectedLoans, setSelectedLoans] = useState([]);
@@ -39,26 +54,33 @@ const ApplyForm = ({ website }) => {
   // Institution title mapping
   const institutionName =
     website === "cpfcu"
-      ? "CPFCU"
+      ? "Central Penn FCU"
       : website === "npcu"
-      ? "NPCU"
+      ? "North Penn CU"
       : "Credit Union";
 
   // Step 1 Validation Schema: Verification
   const step1Schema = yup.object().shape({
-    firstName: yup.string().trim().required("First name is required"),
-    middleName: yup.string().trim(),
-    lastName: yup.string().trim().required("Last name is required"),
+    firstName: yup
+      .string()
+      .trim()
+      .min(2, "First name must be at least 2 characters")
+      .required("First name is required"),
+    middleName: yup.string().trim().optional(),
+    lastName: yup
+      .string()
+      .trim()
+      .min(2, "Last name must be at least 2 characters")
+      .required("Last name is required"),
     accountNumber: yup
       .string()
       .trim()
-      .matches(/^\d+$/, "Enter a valid account number (digits only)")
-      .required("Account number is required"),
+      .required("Member Account Number is required"),
     ssnNumber: yup
       .string()
       .trim()
-      .matches(/^\d{3,4}$/, "Enter the last 3 or 4 digits of your SSN")
-      .required("Last 4 of SSN is required"),
+      .matches(/^\d{4}$/, "Please enter the last 4 digits of your SSN")
+      .required("Last 4 digits of SSN are required"),
   });
 
   // Step 2 Validation Schema: Contact & Terms
@@ -77,7 +99,11 @@ const ApplyForm = ({ website }) => {
     phoneNumber: yup
       .string()
       .trim()
-      .matches(/^(\+?\d{1,3}[- ]?)?\d{10}$/, "Please enter a valid 10-digit phone number")
+      .test("is-10-digits", "Please enter a valid 10-digit phone number", (val) => {
+        if (!val) return false;
+        const digits = val.replace(/\D/g, "");
+        return digits.length === 10;
+      })
       .required("Phone number is required"),
     agreedToTerms: yup
       .boolean()
@@ -123,6 +149,14 @@ const ApplyForm = ({ website }) => {
             // Automatically pre-select all eligible loans by default
             const initialSelected = loansList.map((l) => l._id);
             setSelectedLoans(initialSelected);
+
+            if (response.data?.user?.email) {
+              setFieldValue("email", response.data.user.email);
+              setFieldValue("cEmail", response.data.user.email);
+            }
+            if (response.data?.user?.phoneNumber) {
+              setFieldValue("phoneNumber", response.data.user.phoneNumber);
+            }
 
             if (loansList.length > 0 || isPrevApplied) {
               setTouched({
@@ -235,7 +269,40 @@ const ApplyForm = ({ website }) => {
     },
   });
 
-  const { errors, touched, handleSubmit, handleChange, values, resetForm, setTouched } = formik;
+  const { errors, touched, handleSubmit, handleChange, values, resetForm, setTouched, setFieldValue } = formik;
+  const lastAttemptedLookup = useRef("");
+
+  // Automatic Step 1 Verification:
+  // When applicant completes required fields (first, last, account #, and 3-4 digit SSN), automatically verify and load eligible loans
+  useEffect(() => {
+    if (currentStep !== 1 || isLoading) return;
+
+    const fn = values.firstName?.trim() || "";
+    const ln = values.lastName?.trim() || "";
+    const acc = values.accountNumber?.trim() || "";
+    const ssn = values.ssnNumber?.trim() || "";
+
+    // Trigger auto-verification strictly once all fields are filled and SSN reaches exactly 4 digits
+    if (fn.length >= 2 && ln.length >= 2 && acc.length >= 2 && ssn.length === 4) {
+      const lookupKey = `${fn.toLowerCase()}|${ln.toLowerCase()}|${acc}|${ssn}`;
+      if (lastAttemptedLookup.current === lookupKey) return;
+
+      const timer = setTimeout(() => {
+        lastAttemptedLookup.current = lookupKey;
+        handleSubmit();
+      }, 400);
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    values.firstName,
+    values.lastName,
+    values.accountNumber,
+    values.ssnNumber,
+    currentStep,
+    isLoading,
+    handleSubmit,
+  ]);
 
   // Toggle individual loan selection
   const handleToggleLoan = (loanId) => {
@@ -256,6 +323,7 @@ const ApplyForm = ({ website }) => {
   // Restart application from Step 1
   const handleRestart = () => {
     resetForm();
+    lastAttemptedLookup.current = "";
     setAvailableLoans([]);
     setAppliedLoans([]);
     setSelectedLoans([]);
@@ -328,7 +396,7 @@ const ApplyForm = ({ website }) => {
 
         {/* ---------------- STEP 1: ACCOUNT VERIFICATION ---------------- */}
         {currentStep === 1 && (
-          <div className="apply-form-body">
+          <div className="apply-form-body wizard-step-pane" key="wizard-step-1">
             <Form noValidate onSubmit={handleSubmit}>
               {/* Member Identification Section */}
               <div className="form-section-block">
@@ -352,7 +420,6 @@ const ApplyForm = ({ website }) => {
                         placeholder="e.g. Jane"
                         value={values.firstName}
                         onChange={handleChange}
-                        isValid={touched.firstName && !errors.firstName && !!values.firstName?.trim()}
                         isInvalid={touched.firstName && !!errors.firstName}
                         className="form-control-custom shadow-none"
                       />
@@ -389,7 +456,6 @@ const ApplyForm = ({ website }) => {
                         placeholder="e.g. Smith"
                         value={values.lastName}
                         onChange={handleChange}
-                        isValid={touched.lastName && !errors.lastName && !!values.lastName?.trim()}
                         isInvalid={touched.lastName && !!errors.lastName}
                         className="form-control-custom shadow-none"
                       />
@@ -423,7 +489,6 @@ const ApplyForm = ({ website }) => {
                         placeholder="Enter your account number"
                         value={values.accountNumber}
                         onChange={handleChange}
-                        isValid={touched.accountNumber && !errors.accountNumber && !!values.accountNumber?.trim()}
                         isInvalid={touched.accountNumber && !!errors.accountNumber}
                         className="form-control-custom shadow-none"
                       />
@@ -438,17 +503,33 @@ const ApplyForm = ({ website }) => {
                       <Form.Label className="input-label-custom">
                         Last 4 Digits of SSN <span className="req-star">*</span>
                       </Form.Label>
-                      <Form.Control
-                        type="password"
-                        maxLength={4}
-                        name="ssnNumber"
-                        placeholder="••••"
-                        value={values.ssnNumber}
-                        onChange={handleChange}
-                        isValid={touched.ssnNumber && !errors.ssnNumber && !!values.ssnNumber?.trim()}
-                        isInvalid={touched.ssnNumber && !!errors.ssnNumber}
-                        className="form-control-custom shadow-none"
-                      />
+                      <div className="position-relative">
+                        <Form.Control
+                          type={showSsn ? "text" : "password"}
+                          maxLength={4}
+                          name="ssnNumber"
+                          placeholder="••••"
+                          value={values.ssnNumber}
+                          onChange={handleChange}
+                          isInvalid={touched.ssnNumber && !!errors.ssnNumber}
+                          className="form-control-custom shadow-none"
+                          style={{ paddingRight: 40 }}
+                        />
+                        <button
+                          type="button"
+                          className="btn position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0 text-muted"
+                          onClick={() => setShowSsn((prev) => !prev)}
+                          title={showSsn ? "Hide digits" : "Show digits"}
+                          tabIndex={-1}
+                          style={{ lineHeight: 1 }}
+                        >
+                          {showSsn ? (
+                            <EyeSlashIcon style={{ width: 18, height: 18 }} />
+                          ) : (
+                            <EyeIcon style={{ width: 18, height: 18 }} />
+                          )}
+                        </button>
+                      </div>
                       <Form.Control.Feedback type="invalid">
                         {errors.ssnNumber}
                       </Form.Control.Feedback>
@@ -483,7 +564,7 @@ const ApplyForm = ({ website }) => {
 
         {/* ---------------- STEP 2: AUTO-LOADED LOAN SELECTION & CONTACT ---------------- */}
         {currentStep === 2 && (
-          <div className="apply-form-body">
+          <div className="apply-form-body wizard-step-pane" key="wizard-step-2">
             <Form noValidate onSubmit={handleSubmit}>
               {/* Member Profile Confirmation Strip */}
               <div className="applicant-summary-strip">
@@ -530,6 +611,23 @@ const ApplyForm = ({ website }) => {
                     </Button>
                   )}
                 </div>
+
+                {availableLoans.length > 0 && selectedLoans.length > 0 && (
+                  <div className="loan-selection-summary-pill mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <SparklesIcon style={{ width: 18, height: 18, color: "#7c3aed" }} />
+                      <span>
+                        <strong>
+                          {selectedLoans.length} of {availableLoans.length} loan
+                          {availableLoans.length > 1 ? "s" : ""} selected
+                        </strong>{" "}
+                      </span>
+                    </div>
+                    <span className="badge bg-white text-dark border">
+                      {selectedLoans.length} Selected
+                    </span>
+                  </div>
+                )}
 
                 {availableLoans.length > 0 ? (
                   <Row className="g-3">
@@ -593,7 +691,11 @@ const ApplyForm = ({ website }) => {
                   </Row>
                 ) : (
                   <div className="p-4 text-center rounded-3 bg-light border">
-                    <p className="text-muted mb-0">No additional eligible loans found to skip.</p>
+                    <InformationCircleIcon style={{ width: 36, height: 36, color: "#64748b", margin: "0 auto 8px" }} />
+                    <h4 className="fw-bold text-slate-800 mb-1" style={{ fontSize: 15 }}>No Additional Eligible Loans</h4>
+                    <p className="text-muted mb-0" style={{ fontSize: 13, maxWidth: 460, margin: "0 auto" }}>
+                      No active eligible loans were found to skip for this account in the current billing cycle.
+                    </p>
                   </div>
                 )}
               </div>
@@ -664,7 +766,6 @@ const ApplyForm = ({ website }) => {
                         placeholder="jane.smith@example.com"
                         value={values.email}
                         onChange={handleChange}
-                        isValid={touched.email && !errors.email && !!values.email?.trim()}
                         isInvalid={touched.email && !!errors.email}
                         className="form-control-custom shadow-none"
                       />
@@ -685,7 +786,6 @@ const ApplyForm = ({ website }) => {
                         placeholder="Re-enter email address"
                         value={values.cEmail}
                         onChange={handleChange}
-                        isValid={touched.cEmail && !errors.cEmail && !!values.cEmail?.trim()}
                         isInvalid={touched.cEmail && !!errors.cEmail}
                         className="form-control-custom shadow-none"
                       />
@@ -703,10 +803,12 @@ const ApplyForm = ({ website }) => {
                       <Form.Control
                         type="tel"
                         name="phoneNumber"
-                        placeholder="e.g. 5551234567"
+                        placeholder="e.g. (555) 123-4567"
                         value={values.phoneNumber}
-                        onChange={handleChange}
-                        isValid={touched.phoneNumber && !errors.phoneNumber && !!values.phoneNumber?.trim()}
+                        onChange={(e) => {
+                          const formatted = formatPhoneNumber(e.target.value);
+                          setFieldValue("phoneNumber", formatted);
+                        }}
                         isInvalid={touched.phoneNumber && !!errors.phoneNumber}
                         className="form-control-custom shadow-none"
                       />
@@ -746,7 +848,14 @@ const ApplyForm = ({ website }) => {
                   type="button"
                   variant="light"
                   className="btn-back-apply"
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => {
+                    const fn = values.firstName?.trim() || "";
+                    const ln = values.lastName?.trim() || "";
+                    const acc = values.accountNumber?.trim() || "";
+                    const ssn = values.ssnNumber?.trim() || "";
+                    lastAttemptedLookup.current = `${fn.toLowerCase()}|${ln.toLowerCase()}|${acc}|${ssn}`;
+                    setCurrentStep(1);
+                  }}
                   disabled={isLoading}
                 >
                   <ArrowLeftIcon style={{ width: 16, height: 16 }} />
@@ -777,7 +886,7 @@ const ApplyForm = ({ website }) => {
 
         {/* ---------------- STEP 3: DIGITAL CONFIRMATION RECEIPT ---------------- */}
         {currentStep === 3 && (
-          <div className="receipt-view-wrapper">
+          <div className="receipt-view-wrapper wizard-step-pane" key="wizard-step-3">
             <div className="receipt-success-badge">
               <CheckCircleSolid className="receipt-big-check" />
             </div>

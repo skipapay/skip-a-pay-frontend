@@ -1,19 +1,35 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import {
+  ExclamationTriangleIcon,
+  HomeIcon,
+  ArrowLeftIcon,
+} from "@heroicons/react/24/outline";
 import "./404.scss";
 
 const NotFound = () => {
   return (
-    <div id="notfound">
-      <div className="notfound">
-        <div className="notfound-404">
-          <h3>Oops! Page not found</h3>
-          <h1>
-            <span>4</span>
-            <span>0</span>
-            <span>4</span>
-          </h1>
+    <div className="notfound-page-wrapper">
+      <div className="notfound-card">
+        <div className="error-code-badge">
+          <ExclamationTriangleIcon className="error-icon" />
         </div>
-        <h2>we are sorry, but the page you requested was not found</h2>
+
+        <div className="error-number">404</div>
+        <h1 className="notfound-title">Page Not Found</h1>
+        <p className="notfound-desc">
+          The page or portal link you are looking for doesn't exist, has been removed, or is temporarily unavailable.
+        </p>
+
+        <div className="notfound-actions">
+          <Link to="/" className="btn-action-primary">
+            <HomeIcon className="btn-icon" />
+            <span>Go to Dashboard</span>
+          </Link>
+          <Link to="/apply-cpfcu" className="btn-action-secondary">
+            <span>Apply Portal</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

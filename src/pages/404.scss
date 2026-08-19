@@ -1,104 +1,116 @@
-* {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
+// Modern 404 Error Page Styling
+.notfound-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at 15% 20%, rgba(3, 3, 89, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(77, 23, 189, 0.05) 0%, transparent 45%),
+    #f8fafc;
 
-body {
-  padding: 0;
-  margin: 0;
-}
+  .notfound-card {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.03);
+    padding: 48px 36px;
+    text-align: center;
 
-#notfound {
-  position: relative;
-  height: 100vh;
-}
+    .error-code-badge {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);
+      color: var(--primary, #030359);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(3, 3, 89, 0.12);
 
-#notfound .notfound {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
+      .error-icon {
+        width: 36px;
+        height: 36px;
+      }
+    }
 
-.notfound {
-  max-width: 520px;
-  width: 100%;
-  line-height: 1.4;
-  text-align: center;
-}
+    .error-number {
+      font-size: 54px;
+      font-weight: 900;
+      color: var(--primary, #030359);
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
 
-.notfound .notfound-404 {
-  position: relative;
-  height: 240px;
-}
+    .notfound-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.3px;
+      margin-bottom: 8px;
+    }
 
-.notfound .notfound-404 h1 {
-  font-family: montserrat, sans-serif;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  font-size: 252px;
-  font-weight: 900;
-  margin: 0;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: -40px;
-  margin-left: -20px;
-}
+    .notfound-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
 
-.notfound .notfound-404 h1 > span {
-  text-shadow: -8px 0 0 #fff;
-}
+    .notfound-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
 
-.notfound .notfound-404 h3 {
-  font-family: cabin, sans-serif;
-  position: relative;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #262626;
-  margin: 0;
-  letter-spacing: 3px;
-  padding-left: 6px;
-}
+      .btn-action-primary {
+        padding: 12px 24px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary, #030359) 0%, #1e1b7a 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 14px rgba(3, 3, 89, 0.2);
+        transition: all 0.2s ease;
+        text-decoration: none;
 
-.notfound h2 {
-  font-family: cabin, sans-serif;
-  font-size: 20px;
-  font-weight: 400;
-  text-transform: uppercase;
-  color: #000;
-  margin-top: 0;
-  margin-bottom: 25px;
-}
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(3, 3, 89, 0.28);
+          color: #ffffff;
+        }
 
-@media only screen and (max-width: 767px) {
-  .notfound .notfound-404 {
-    height: 200px;
-  }
+        .btn-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
 
-  .notfound .notfound-404 h1 {
-    font-size: 200px;
-  }
-}
+      .btn-action-secondary {
+        padding: 12px 20px;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1.5px solid #cbd5e1;
+        color: #334155;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.2s ease;
 
-@media only screen and (max-width: 480px) {
-  .notfound .notfound-404 {
-    height: 162px;
-  }
-
-  .notfound .notfound-404 h1 {
-    font-size: 162px;
-    height: 150px;
-    line-height: 162px;
-  }
-
-  .notfound h2 {
-    font-size: 16px;
+        &:hover {
+          background: #f1f5f9;
+          color: #0f172a;
+        }
+      }
+    }
   }
 }
