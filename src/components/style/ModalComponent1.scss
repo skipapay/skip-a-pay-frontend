@@ -1,53 +1,69 @@
-.modalComponent {
-  .ModalComponent1 {
-    // if border
-    &.borderRight {
-      border-right: 1px solid var(--bs-border-color);
-    }
+.modal-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #eef2f6;
+  transition: all 0.2s ease;
+  height: 100%;
 
-    .title {
-      margin: 0;
-      line-height: 20px;
-      font-size: 22px;
-    }
+  &:hover {
+    border-color: #dbeafe;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
 
-    .sub-title {
-      margin: 0;
-      color: var(--grey);
-      font-size: 16px;
-      white-space: pre-line;
-      word-break: break-all;
+  .info-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: var(--primary, #030359);
+    flex-shrink: 0;
+
+    .info-icon {
+      width: 18px;
+      height: 18px;
     }
   }
-}
 
-@media only screen and (max-width: 991px) {
-  .modalComponent {
-    .ModalComponent1 {
-      border-bottom: 1px solid var(--bs-border-color);
-      padding: 20px 0;
+  .info-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
 
-      // if border
-      &.borderRight {
-        border-right: none !important;
-      }
-
-      .title {
-        margin: 0;
-        line-height: 20px;
-        font-size: 22px;
-      }
-
-      .sub-title {
-        margin: 0;
-        color: var(--grey);
-        font-size: 16px;
-      }
+    .info-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      margin-bottom: 2px;
     }
 
-    // dividers
-    hr {
-      display: none;
+    .info-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .info-badge {
+      display: inline-block;
+      align-self: flex-start;
+      margin-top: 4px;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      color: #334155;
     }
   }
 }
