@@ -1,77 +1,215 @@
-.icon-card {
+// Modern Metric Stat Card Styling
+.modern-stat-card {
   position: relative;
   overflow: hidden;
-  min-height: 175px;
-  min-width: 300px;
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 10px 10px 50px rgba($color: #000000, $alpha: 0.2);
-  background-color: var(--bg);
-  color: var(--light);
-  transition: transform 300ms ease-in-out;
-  cursor: default;
-  @media screen and (max-width: 400px) {
-    min-width: 100%;
-  }
-  &:hover {
-    transform: scale(1.01);
-  }
-  @media screen and (min-width: 375px) {
-    .content {
-      min-width: 250px;
-      margin: 0 auto;
-    }
-  }
-  .icon {
-    svg {
-      --size: 50px;
-      width: var(--size);
-      height: var(--size);
-    }
-  }
-  .title {
-    color: var(--light);
-    margin: 0;
-    font-weight: normal;
-    font-size: 18px;
-    .small-title {
-      opacity: 0.7;
-      font-size: 12px;
-    }
-  }
-  .subtitle {
-    font-size: 14px;
-    margin: 0;
-    opacity: 0.7;
-  }
-  .circle {
-    --size: 70px;
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    width: var(--size);
-    height: var(--size);
-    opacity: 0.2;
-    z-index: 0;
-    &::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 50px;
-      padding: 10px;
-      background: linear-gradient(var(--bg), var(--light));
-      -webkit-mask: linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-    }
-    &:nth-child(2) {
-      top: calc(100% - 50px);
-      left: -20px;
-      &::before {
-        background: linear-gradient(200deg, var(--light), var(--bg) 50%);
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 190px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.is-clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.09);
+      border-color: #cbd5e1;
+
+      .card-action-footer {
+        color: var(--card-accent, #030359);
+
+        .action-icon {
+          transform: translateX(4px);
+        }
+      }
+
+      .stat-icon-wrapper {
+        transform: scale(1.08);
       }
     }
+
+    &:focus-visible {
+      outline: 2px solid var(--card-accent, #030359);
+      outline-offset: 2px;
+    }
+  }
+
+  .card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+
+    .stat-icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: var(--icon-bg, #eff6ff);
+      color: var(--card-accent, #030359);
+      transition: transform 0.25s ease;
+      box-shadow: 0 4px 12px var(--icon-shadow, rgba(3, 3, 89, 0.08));
+
+      .stat-icon {
+        width: 26px;
+        height: 26px;
+      }
+    }
+
+    .stat-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--badge-bg, #f1f5f9);
+      color: var(--badge-color, #475569);
+      letter-spacing: 0.3px;
+    }
+  }
+
+  .stat-content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+
+    .stat-label-group {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 6px;
+
+      .stat-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+      }
+
+      .stat-small-title {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 500;
+      }
+    }
+
+    .stat-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+        letter-spacing: -1px;
+      }
+    }
+
+    .stat-description {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+  }
+
+  .card-action-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #94a3b8;
+    position: relative;
+    z-index: 1;
+    transition: color 0.2s ease;
+
+    .action-icon {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+  }
+
+  .card-ambient-glow {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--glow-color, rgba(3, 3, 89, 0.06)) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Color Palette Variants */
+  &.variant-primary {
+    --card-accent: #030359;
+    --icon-bg: #eef2ff;
+    --icon-shadow: rgba(3, 3, 89, 0.12);
+    --badge-bg: #e0e7ff;
+    --badge-color: #3730a3;
+    --glow-color: rgba(3, 3, 89, 0.08);
+  }
+
+  &.variant-blue {
+    --card-accent: #1863d3;
+    --icon-bg: #eff6ff;
+    --icon-shadow: rgba(24, 99, 211, 0.14);
+    --badge-bg: #dbeafe;
+    --badge-color: #1e40af;
+    --glow-color: rgba(24, 99, 211, 0.08);
+  }
+
+  &.variant-purple {
+    --card-accent: #6366f1;
+    --icon-bg: #f5f3ff;
+    --icon-shadow: rgba(99, 102, 241, 0.14);
+    --badge-bg: #ede9fe;
+    --badge-color: #5b21b6;
+    --glow-color: rgba(99, 102, 241, 0.08);
+  }
+
+  &.variant-emerald {
+    --card-accent: #059669;
+    --icon-bg: #ecfdf5;
+    --icon-shadow: rgba(5, 150, 105, 0.14);
+    --badge-bg: #d1fae5;
+    --badge-color: #065f46;
+    --glow-color: rgba(5, 150, 105, 0.08);
+  }
+
+  &.variant-indigo {
+    --card-accent: #4338ca;
+    --icon-bg: #e0e7ff;
+    --icon-shadow: rgba(67, 56, 202, 0.14);
+    --badge-bg: #c7d2fe;
+    --badge-color: #312e81;
+    --glow-color: rgba(67, 56, 202, 0.08);
+  }
+
+  &.variant-amber {
+    --card-accent: #d97706;
+    --icon-bg: #fffbeb;
+    --icon-shadow: rgba(217, 119, 6, 0.14);
+    --badge-bg: #fef3c7;
+    --badge-color: #92400e;
+    --glow-color: rgba(217, 119, 6, 0.08);
   }
 }

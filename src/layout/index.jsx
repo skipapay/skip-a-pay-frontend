@@ -7,65 +7,45 @@ import Loader from "components/Loader";
 const Sidebar = lazy(() => import("./Sidebar"));
 
 const Layout = () => {
-  let root = document.documentElement;
-  let screenWidth = window.innerWidth;
+  const isMobile = () => window.innerWidth <= config.hideSidebar;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile());
 
-  const [sidebar, setSidebar] = useState(screenWidth <= config.hideSidebar);
-
-  const handleSidebar = () => {
-    if (screenWidth <= config.hideSidebar) {
-      root.style.setProperty("--sidebar", 0);
-      root.style.setProperty("--menu-indicator-width", "calc(100% - 40px)");
-
-      if (!sidebar) {
-        document.querySelector("body").classList.add("sidebar-open");
+  const applySidebarWidth = (open, mobile) => {
+    const root = document.documentElement;
+    if (mobile) {
+      root.style.setProperty("--sidebar", "0px");
+      if (open) {
+        document.body.classList.add("sidebar-open");
       } else {
-        document.querySelector("body").classList.remove("sidebar-open");
+        document.body.classList.remove("sidebar-open");
       }
     } else {
-      document.querySelector("body").classList.remove("sidebar-open");
-      root.style.setProperty("--menu-indicator-width", "42px");
-      root.style.setProperty(
-        "--sidebar",
-        sidebar && root.style.getPropertyValue("--sidebar") === "270px"
-          ? "60px"
-          : "270px"
-      );
+      document.body.classList.remove("sidebar-open");
+      root.style.setProperty("--sidebar", open ? "270px" : "80px");
     }
-
-    setSidebar(!sidebar);
   };
+
+  const handleSidebarToggle = () => {
+    const mobile = isMobile();
+    const nextState = !isSidebarOpen;
+    setIsSidebarOpen(nextState);
+    applySidebarWidth(nextState, mobile);
+  };
+
   const handleResize = () => {
-    screenWidth = window.innerWidth;
-
-    document.querySelector("body").classList.remove("sidebar-open");
-
-    if (screenWidth <= config.hideSidebar) {
-      setSidebar(false);
-
-      root.style.setProperty("--sidebar", 0);
-      root.style.setProperty("--menu-indicator-width", "calc(100% - 40px)");
+    const mobile = isMobile();
+    if (mobile) {
+      setIsSidebarOpen(false);
+      applySidebarWidth(false, true);
     } else {
-      setSidebar(true);
-
-      document.querySelector("body").classList.remove("sidebar-open");
-      root.style.setProperty(
-        "--sidebar",
-        !sidebar && !root.style.getPropertyValue("--sidebar") === "270px"
-          ? "60px"
-          : "270px"
-      );
-      root.style.setProperty(
-        "--menu-indicator-width",
-        root.style.getPropertyValue("--sidebar") === "270px"
-          ? "calc(100% - 40px)"
-          : "42px"
-      );
+      setIsSidebarOpen(true);
+      applySidebarWidth(true, false);
     }
   };
 
   useEffect(() => {
-    handleSidebar();
+    const mobile = isMobile();
+    applySidebarWidth(!mobile, mobile);
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -77,15 +57,17 @@ const Layout = () => {
     <Suspense fallback={<Loader />}>
       <div
         style={{
-          paddingLeft: "var(--sidebar)",
-          transition: "all 300ms ease-in-out",
+          paddingLeft: "var(--sidebar, 270px)",
+          transition: "padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+          minHeight: "100vh",
+          backgroundColor: "#f8fafc",
         }}
       >
-        <Sidebar handleSidebar={handleSidebar} isOpenSidebar={sidebar} />
-        <Header handleClick={handleSidebar} />
-        <div style={{ padding: "40px 25px" }}>
+        <Sidebar handleSidebar={handleSidebarToggle} isOpenSidebar={isSidebarOpen} />
+        <Header handleClick={handleSidebarToggle} />
+        <main style={{ padding: "28px 24px" }}>
           <Outlet />
-        </div>
+        </main>
       </div>
     </Suspense>
   );

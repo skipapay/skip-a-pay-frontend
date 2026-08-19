@@ -1,17 +1,17 @@
-import { Stack } from "react-bootstrap";
+import React from "react";
 import config from "config/config";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 const Title = () => {
   return (
-    <Stack direction="horizontal" className="title align-items-start">
-      <span className="logo">
+    <div className="title">
+      <div className="logo">
         <Cog6ToothIcon />
-      </span>
-      <span className="site-name">
+      </div>
+      <div className="site-name">
         <h2>{config.siteName}</h2>
-      </span>
-    </Stack>
+      </div>
+    </div>
   );
 };
 

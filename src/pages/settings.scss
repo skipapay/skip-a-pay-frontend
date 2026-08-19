@@ -1,0 +1,194 @@
+// Settings & Loan Ingestion Styles
+.settings-page {
+  .page-header-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+
+    .header-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+
+      .header-title-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+
+        .header-icon-box {
+          width: 48px;
+          height: 48px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
+          color: var(--purple, #4d17bd);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          box-shadow: 0 4px 12px rgba(77, 23, 189, 0.12);
+
+          .header-icon {
+            width: 26px;
+            height: 26px;
+          }
+        }
+
+        .title-text {
+          font-size: 22px;
+          font-weight: 800;
+          color: #0f172a;
+          letter-spacing: -0.3px;
+          margin-bottom: 2px;
+        }
+
+        .subtitle-text {
+          font-size: 13.5px;
+          color: #64748b;
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  /* Upload & Guide Cards */
+  .settings-content-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    padding: 24px 28px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .card-heading-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+
+      .card-heading-icon {
+        width: 20px;
+        height: 20px;
+        color: var(--primary, #030359);
+      }
+
+      .card-heading-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0;
+      }
+    }
+
+    .card-heading-desc {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    .btn-upload-submit {
+      width: 100%;
+      height: 48px;
+      margin-top: 18px;
+      background: linear-gradient(135deg, var(--primary, #030359) 0%, #1e1b7a 100%);
+      border: none;
+      border-radius: 12px;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(3, 3, 89, 0.2);
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(3, 3, 89, 0.28);
+        background: linear-gradient(135deg, var(--primary-hover, #04047e) 0%, #262396 100%);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .upload-btn-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  /* Specification Guide Box */
+  .schema-guide-table {
+    width: 100%;
+    margin-bottom: 18px;
+    font-size: 12.5px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+
+    thead {
+      background: #f8fafc;
+
+      th {
+        padding: 8px 12px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+    }
+
+    tbody {
+      td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+
+        &:first-child {
+          font-family: monospace;
+          font-weight: 600;
+          color: var(--primary, #030359);
+        }
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .guide-tip-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: #166534;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.4;
+
+    .tip-icon {
+      width: 18px;
+      height: 18px;
+      color: #16a34a;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+  }
+}

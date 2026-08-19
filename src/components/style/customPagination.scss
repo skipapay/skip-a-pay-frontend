@@ -1,5 +1,179 @@
-.custom-paginations {
-    --bs-pagination-active-bg: var(--primary) !important;
-    --bs-pagination-active-border-color: var(--primary) !important;
-    --bs-pagination-color: var(--primary-hover) !important;
+// Modern Pagination Styling
+.modern-pagination-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+
+  .pagination-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover:not(:disabled) {
+      background: #f1f5f9;
+      color: var(--primary, #030359);
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: #f1f5f9;
+      background: #f8fafc;
+    }
+  }
+
+  .pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 2px;
+
+    .pagination-num-btn {
+      min-width: 36px;
+      height: 36px;
+      padding: 0 8px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      color: #334155;
+      font-size: 13.5px;
+      font-weight: 600;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover:not(.is-active) {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: var(--primary, #030359);
+        transform: translateY(-1px);
+      }
+
+      &.is-active {
+        background: linear-gradient(135deg, var(--primary, #030359) 0%, #1e1b7a 100%);
+        border-color: var(--primary, #030359);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(3, 3, 89, 0.25);
+        font-weight: 700;
+      }
+    }
+
+    .pagination-ellipsis {
+      padding: 0 6px;
+      font-size: 12px;
+      color: #94a3b8;
+      letter-spacing: 1px;
+    }
+  }
+}
+
+/* Rows per page dropdown & controls footer bar */
+.table-pagination-footer {
+  padding: 16px 24px;
+  background: #ffffff;
+  border-top: 1px solid #edf2f7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .footer-left-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .rows-per-page-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+
+      .rows-select-custom {
+        height: 36px;
+        padding: 0 10px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        background-color: #f8fafc;
+        color: #0f172a;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.2s ease;
+
+        &:focus {
+          border-color: var(--primary, #030359);
+          background-color: #ffffff;
+          box-shadow: 0 0 0 3px rgba(3, 3, 89, 0.1);
+        }
+      }
+    }
+
+    .results-count-text {
+      font-size: 13px;
+      color: #64748b;
+
+      strong {
+        color: #0f172a;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .footer-right-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+
+    .page-jump-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #64748b;
+
+      .jump-input {
+        width: 54px;
+        height: 36px;
+        padding: 0 6px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        color: #0f172a;
+        outline: none;
+        transition: all 0.2s ease;
+
+        &:focus {
+          background: #ffffff;
+          border-color: var(--primary, #030359);
+          box-shadow: 0 0 0 3px rgba(3, 3, 89, 0.1);
+        }
+      }
+    }
+  }
 }

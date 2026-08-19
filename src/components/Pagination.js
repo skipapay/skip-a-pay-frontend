@@ -1,160 +1,128 @@
+import React from "react";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { Pagination, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import useQuery from "hooks/useQuery";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+} from "@heroicons/react/24/outline";
 import "./style/customPagination.scss";
 
-const CustomPagination = ({ count, className }) => {
+const CustomPagination = ({ count, className, currentPage, onPageChange }) => {
   const query = useQuery();
-  let skip = query.get("skip") ?? 1;
   const navigate = useNavigate();
-  // this page is actually an active page where it come from url. 
-  const [page, setPage] = useState(skip);
+  const urlPage = parseInt(query.get("skip")) || 1;
+  const activePage = currentPage !== undefined ? Number(currentPage) : urlPage;
+  const totalPages = Math.max(1, Number(count) || 1);
 
-  // for check page
-  const [isFirst, setisFirst] = useState(page === 1);
-  const [isLast, setisLast] = useState(parseInt(page) >= count);
-  useEffect(() => {
-    setPage(parseInt(skip));
-    setisFirst(parseInt(skip) === 1);
-    setisLast(parseInt(skip) >= count);
-  }, [skip, count]);
-  const handleNext = () => {
-    // I took isNaN here because when query passed 
-    const nextSkip = (isNaN(parseInt(skip)) ? 1 : parseInt(skip)) + 1;
-    navigate(`?skip=${nextSkip}`);
-  };
-  const handlePrev = () => {
-    const nextSkip = (isNaN(parseInt(skip)) ? 2 : parseInt(skip)) - 1;
-    navigate(`?skip=${nextSkip}`);
-  };
-  const handleCurrentPage = (value) => {
-    navigate(`?skip=${value.target.getAttribute("value")}`, { replace: true });
-  };
-  const updateFirst = (value) => {
-    const nextSkip = 1;
-    navigate(`?skip=${nextSkip}`);
-  };
-  const updateLast = (value) => {
-    const nextSkip = count;
-    navigate(`?skip=${nextSkip}`);
-  };
-  // classes for pagination
-  let classes = `flex-wrap justify-content-center custom-paginations ${className}`;
-
-  // handling paging numbers.
-  const renderPageItems = () => {
-    // least number for when pagenumbers more then 100
-    let checkActivePage = 0;
-
-    const items = [];
-    // if all pages is less then 10 the it will static direct give those pages.  
-    if (count <= 10) {
-      for (let pageNumber = 1; pageNumber <= count; pageNumber++) {
-        items.push(
-          <Pagination.Item
-            value={pageNumber}
-            key={pageNumber}
-            active={pageNumber === page}
-            onClick={handleCurrentPage}
-          >
-            {pageNumber}
-          </Pagination.Item>
-        );
-      }
+  const goToPage = (p) => {
+    if (p < 1 || p > totalPages || p === activePage) return;
+    if (onPageChange) {
+      onPageChange(p);
     } else {
-      // here page is an active page.
-      if (page < (count - 10)) {
-        for (let pageNumber = 1; pageNumber <= 10; pageNumber++) {
-          items.push(
-            <Pagination.Item
-              value={page + checkActivePage}
-              key={page + checkActivePage}
-              active={page + checkActivePage === page}
-              onClick={handleCurrentPage}
-            >
-              {page + checkActivePage}
-            </Pagination.Item>
-          );
-          if (pageNumber === 10) {
-            items.push(<Pagination.Ellipsis disabled key={`eclipse-${pageNumber}`} />)
-            items.push(
-              <Pagination.Item
-                value={count}
-                key={count}
-                active={count === page}
-                onClick={handleCurrentPage}
-              >
-                {count}
-              </Pagination.Item>
-            );
-          }
-          checkActivePage++;
-        }
-      } else {
-        for (let pageNumber = 10; pageNumber >= 1; pageNumber--) {
-          if (pageNumber === 10) {
-            items.push(<Pagination.Ellipsis disabled key={`eclipse-${pageNumber}`} />)
-          }
-          items.push(
-            <Pagination.Item
-              value={count - pageNumber}
-              key={count - pageNumber}
-              active={count - pageNumber === page}
-              onClick={handleCurrentPage}
-            >
-              {count - pageNumber}
-            </Pagination.Item>
-          );
-          // checkActivePage++;
-        }
-      }
+      const q = new URLSearchParams(window.location.search);
+      q.set("skip", p);
+      navigate(`?${q.toString()}`);
     }
-    return items;
-  }
-  return (
-    <Stack>
-      <Pagination className={classes}>
-        <Pagination.First onClick={updateFirst} disabled={isFirst} />
-        <Pagination.Prev onClick={handlePrev} disabled={isFirst} />
-        {renderPageItems()}
-        {/* <Pagination.Item as={Link} to="/page1" active>{1}</Pagination.Item>
-                <Pagination.Item as={Link} to="/page2">{2}</Pagination.Item> */}
-        {/* {Array.from({ length: count }, (_, index) => {
-          let pageNumber = index + 1;
-          if (pageNumber === page) {
-            return (
-              <Pagination.Item key={pageNumber} active>
-                {pageNumber}
-              </Pagination.Item>
-            );
-          }
-          return (
-            <Pagination.Item
-              value={pageNumber}
-              key={pageNumber}
-              onClick={handleCurrentPage}
-            >
-              {pageNumber}
-            </Pagination.Item>
-          );
-        })} */}
-        {/* <Pagination.Ellipsis />
+  };
 
-                <Pagination.Item href='google.com'>{10}</Pagination.Item>
-                <Pagination.Item>{11}</Pagination.Item>
-                <Pagination.Item>{12}</Pagination.Item>
-                <Pagination.Item>{13}</Pagination.Item>
-                <Pagination.Ellipsis /> */}
-        {/* <Pagination.Item>{20}</Pagination.Item> */}
-        <Pagination.Next onClick={handleNext} disabled={isLast} />
-        <Pagination.Last onClick={updateLast} disabled={isLast} />
-      </Pagination>
-    </Stack>
+  // Generate page numbers with responsive ellipsis
+  const getVisiblePages = () => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    if (activePage <= 4) {
+      return [1, 2, 3, 4, 5, "...", totalPages];
+    }
+
+    if (activePage >= totalPages - 3) {
+      return [1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+
+    return [1, "...", activePage - 1, activePage, activePage + 1, "...", totalPages];
+  };
+
+  if (totalPages <= 1) return null;
+
+  const pages = getVisiblePages();
+
+  return (
+    <div className={`modern-pagination-container ${className || ""}`}>
+      {/* First Page */}
+      <button
+        type="button"
+        className="pagination-nav-btn"
+        onClick={() => goToPage(1)}
+        disabled={activePage === 1}
+        title="First Page"
+      >
+        <ChevronDoubleLeftIcon className="nav-icon" />
+      </button>
+
+      {/* Prev Page */}
+      <button
+        type="button"
+        className="pagination-nav-btn"
+        onClick={() => goToPage(activePage - 1)}
+        disabled={activePage === 1}
+        title="Previous Page"
+      >
+        <ChevronLeftIcon className="nav-icon" />
+      </button>
+
+      {/* Page Numbers */}
+      <div className="pagination-numbers">
+        {pages.map((p, idx) =>
+          p === "..." ? (
+            <span key={`ellipsis-${idx}`} className="pagination-ellipsis">
+              •••
+            </span>
+          ) : (
+            <button
+              key={`page-${p}`}
+              type="button"
+              className={`pagination-num-btn ${activePage === p ? "is-active" : ""}`}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </button>
+          )
+        )}
+      </div>
+
+      {/* Next Page */}
+      <button
+        type="button"
+        className="pagination-nav-btn"
+        onClick={() => goToPage(activePage + 1)}
+        disabled={activePage >= totalPages}
+        title="Next Page"
+      >
+        <ChevronRightIcon className="nav-icon" />
+      </button>
+
+      {/* Last Page */}
+      <button
+        type="button"
+        className="pagination-nav-btn"
+        onClick={() => goToPage(totalPages)}
+        disabled={activePage >= totalPages}
+        title="Last Page"
+      >
+        <ChevronDoubleRightIcon className="nav-icon" />
+      </button>
+    </div>
   );
 };
+
 CustomPagination.propTypes = {
-  userdetails: PropTypes.object,
+  count: PropTypes.number.isRequired,
+  className: PropTypes.string,
+  currentPage: PropTypes.number,
+  onPageChange: PropTypes.func,
 };
+
 export default CustomPagination;

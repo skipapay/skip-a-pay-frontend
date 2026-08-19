@@ -1,8 +1,7 @@
-import Card from "components/Card";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactTable from "components/Table";
 import submittedApplications from "api/admin/users";
-import { Button, Dropdown, Spinner, Stack } from "react-bootstrap";
+import { Button, Dropdown, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setSubmittedFormsCount } from "features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -10,177 +9,196 @@ import { toast } from "react-toastify";
 import useQuery from "hooks/useQuery";
 import formDownload from "api/user/downloadForm";
 import { saveAs } from "file-saver";
-import Input from "components/Form/Input";
 import moment from "moment";
 import SubmitFormDeleteModal from "components/SubmitFormDeleteModal";
 import CustomPagination from "components/Pagination";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import {
+  DocumentCheckIcon,
+  TrashIcon,
+  MagnifyingGlassIcon,
+  ArrowDownTrayIcon,
+  CalendarDaysIcon,
+  InboxIcon,
+} from "@heroicons/react/24/outline";
+import "./submittedForm.scss";
 
 const SubmittedForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const query = useQuery();
   const toastId = useRef(null);
-  let skip = query.get("skip") ?? 1;
+
+  const skip = parseInt(query.get("skip")) || 1;
+  const limit = parseInt(query.get("limit")) || 10;
+  const daysParam = query.get("days");
+  const searchParam = query.get("search");
 
   const [isLoading, setIsLoading] = useState(true);
-  const [filterDate, setFilterDate] = useState({});
-  const [filterLabel, setFilterLabel] = useState("Filter by Date");
   const [submittedForm, setSubmittedForm] = useState([]);
-  // Delete model data
-  const [show, setShow] = useState(false);
+  const [searchInput, setSearchInput] = useState(searchParam || "");
+  const [activeDaysFilter, setActiveDaysFilter] = useState(
+    daysParam ? Number(daysParam) : 0
+  );
+
+  // Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState("");
 
-  //filter option
-  const filterDays = [7, 14, 30];
+  const filterOptions = [
+    { label: "All Time", value: 0 },
+    { label: "Last 7 Days", value: 7 },
+    { label: "Last 14 Days", value: 14 },
+    { label: "Last 30 Days", value: 30 },
+  ];
+
+  const pageSizeOptions = [10, 25, 50, 100];
 
   const getAllUsers = async (params = {}) => {
-    let applications = await submittedApplications({ ...params, limit: 10 });
-    dispatch(
-      setSubmittedFormsCount({
-        count: applications.data?.count,
-      })
-    );
-    setSubmittedForm(applications.data?.users);
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
+      const queryPayload = { ...params, limit: params.limit || limit };
+      let applications = await submittedApplications(queryPayload);
+      dispatch(
+        setSubmittedFormsCount({
+          count: applications.data?.count,
+        })
+      );
+      setSubmittedForm(applications.data?.users || []);
+    } catch (err) {
+      toast.error(err?.message || "Failed to retrieve submitted applications.");
+    } finally {
+      setIsLoading(false);
+    }
   };
-  // for paginaiton
-  const pageCount = Math.ceil(
-    useSelector((state) => state.auth.submittedFormsCount[0]) / 10
-  );
-  // for input page number handleChange
+
+  const totalCount = useSelector((state) => state.auth.submittedFormsCount[0]) || 0;
+  const pageCount = Math.ceil(totalCount / limit);
+
+  // Handle rows per page limit change
+  const handleLimitChange = (e) => {
+    const newLimit = Number(e.target.value);
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set("limit", newLimit);
+    queryParams.set("skip", 1); // Reset to first page
+    navigate(`?${queryParams.toString()}`);
+  };
+
+  // Page jumper
   const handleChangePageNumber = (event) => {
-    if (event.target.value < pageCount) {
-      // this value is active page come from input and it will send to url to get an api
-      setTimeout(function () {
-        navigate(`?skip=${event.target.value}`, { replace: true });
-        // when input is empty
-        if (event.target.value === "") {
-          const url = new URL(window.location.href);
-          url.searchParams.delete("skip");
-          window.history.replaceState({}, "", url.toString());
-        }
-      }, 1000);
+    const targetPage = Number(event.target.value);
+    if (targetPage >= 1 && targetPage <= pageCount) {
+      const queryParams = new URLSearchParams(window.location.search);
+      queryParams.set("skip", targetPage);
+      navigate(`?${queryParams.toString()}`);
     }
   };
 
   useEffect(() => {
-    let days = query.get("days");
-    let search = query.get("search");
     let queryParams = {};
-    if (skip) {
-      queryParams["skip"] = skip;
-    }
-    setFilterDate(
-      filterDays.includes(Number(days))
-        ? { label: `Last ${days} days`, value: days }
-        : ""
-    );
-    days && setFilterLabel(`Last ${days} days`);
 
-    if (search) {
-      queryParams["search"] = search;
+    if (skip) queryParams["skip"] = skip;
+    if (limit) queryParams["limit"] = limit;
+    if (searchParam) {
+      queryParams["search"] = searchParam;
+      setSearchInput(searchParam);
     }
-    if (days) {
-      queryParams["days"] = days;
+    if (daysParam) {
+      queryParams["days"] = daysParam;
+      setActiveDaysFilter(Number(daysParam));
+    } else {
+      setActiveDaysFilter(0);
     }
 
     getAllUsers(queryParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  let data = useMemo(() => submittedForm, [submittedForm]);
-
-  // filter the form data
+  // Filter by timeframe
   const handleFilter = (days) => {
-    const searchQuery = new URLSearchParams(window.location.search).get(
-      "search"
-    );
     const queryParams = new URLSearchParams();
+    const searchQuery = query.get("search");
 
-    if (days) {
+    if (days && days > 0) {
       queryParams.set("days", days);
-    } else {
-      setFilterLabel(`Filter by Date`);
     }
-
     if (searchQuery) {
       queryParams.set("search", searchQuery);
     }
+    if (limit && limit !== 10) {
+      queryParams.set("limit", limit);
+    }
+    queryParams.set("skip", 1);
 
-    const queryString = queryParams.toString();
-    if (queryString) {
-      // let days = e.target.value || 0;
-      setFilterDate({ label: `Last ${days} days`, value: days });
-      navigate("?" + queryString);
-      if (days) {
-        setFilterLabel(`Last ${days} days`);
-      } else {
-        setFilterLabel(`Filter by Date`);
+    const qs = queryParams.toString();
+    navigate(qs ? `?${qs}` : window.location.pathname);
+  };
+
+  // Search with debounce
+  let searchTimeout = useRef(null);
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchInput(val);
+
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+
+    searchTimeout.current = setTimeout(() => {
+      const queryParams = new URLSearchParams();
+      const currentDays = query.get("days");
+
+      if (val.trim()) {
+        queryParams.set("search", val.trim());
       }
-    } else {
-      navigate({ replace: true });
-    }
+      if (currentDays) {
+        queryParams.set("days", currentDays);
+      }
+      if (limit && limit !== 10) {
+        queryParams.set("limit", limit);
+      }
+      queryParams.set("skip", 1);
+
+      const qs = queryParams.toString();
+      navigate(qs ? `?${qs}` : window.location.pathname);
+    }, 600);
   };
 
-  // handle search input
-  let searchTimeout;
-  const handleSearch = (e) => {
-    let searchQuery = e.target.value;
-
-    const daysQuery = new URLSearchParams(window.location.search).get("days");
-    const queryParams = new URLSearchParams();
-
-    if (daysQuery) {
-      queryParams.set("days", daysQuery);
-    } else {
-      setFilterLabel(`Filter by Date`);
-    }
-
-    if (searchQuery) {
-      queryParams.set("search", searchQuery);
-    } else {
-      queryParams.delete("search");
-    }
-    const queryString = queryParams.toString();
-
-    if (!queryString) {
-      clearTimeout(searchTimeout);
-      navigate({ replace: true });
-      return;
-    }
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      navigate("?" + queryString);
-    }, 1000);
-  };
-
-  // download all form in csv format
+  // Download all or filtered forms in CSV format
   const handleDownload = async (days) => {
     let param = days ? { days } : { days: null };
     let msg = days
       ? `Last ${days} days data downloaded.`
-      : "All data downloaded.";
-    toastId.current = toast.loading("Downloading...", {
+      : "All application data downloaded.";
+
+    toastId.current = toast.loading("Preparing CSV export...", {
       autoClose: false,
       closeOnClick: false,
     });
-    let downloadRes = await formDownload(param);
-    if (downloadRes.status === 200) {
-      let fileName = days ? `${days}-days-data.csv` : "all-data.csv";
-      // Save the file using FileSaver.js
-      saveAs(downloadRes.data, fileName);
+
+    try {
+      let downloadRes = await formDownload(param);
+      if (downloadRes.status === 200) {
+        let fileName = days ? `skip-applications-${days}-days.csv` : "all-skip-applications.csv";
+        saveAs(downloadRes.data, fileName);
+        toast.update(toastId.current, {
+          render: msg,
+          type: "success",
+          isLoading: false,
+          autoClose: 5000,
+          closeButton: true,
+          closeOnClick: true,
+        });
+      } else {
+        toast.update(toastId.current, {
+          render: downloadRes.message || "Failed to download export file.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+          closeButton: true,
+          closeOnClick: true,
+        });
+      }
+    } catch (err) {
       toast.update(toastId.current, {
-        render: msg,
-        type: "success",
-        isLoading: false,
-        autoClose: 5000,
-        closeButton: true,
-        closeOnClick: true,
-      });
-    } else {
-      toast.update(toastId.current, {
-        render: downloadRes.message,
+        render: err?.message || "Export download failed.",
         type: "error",
         isLoading: false,
         autoClose: 5000,
@@ -190,193 +208,290 @@ const SubmittedForm = () => {
     }
   };
 
-  // delete all
-  const handleDelete = (event) => {
-    setDeleteId(event.currentTarget.value);
-    setShow(true);
+  // Trigger single or bulk delete
+  const handleDeleteClick = (id) => {
+    setDeleteId(id || "");
+    setShowDeleteModal(true);
   };
 
-  // handle close
-  const handleClose = () => {
-    setShow(false);
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
   };
+
+  const data = useMemo(() => submittedForm, [submittedForm]);
+
+  // Enhanced Table Columns
   const columns = useMemo(
     () => [
-      { Header: "First Name", accessor: "firstName" },
-      { Header: "Last Name", accessor: "lastName" },
-      { Header: "Email", accessor: "email" },
-      { Header: "Account Number", accessor: "accountNumber" },
       {
-        Header: "Website",
-        accessor: "website",
-        Cell: ({ value }) => value?.toUpperCase(),
-      },
-      {
-        Header: "Loan ID",
-        accessor: "loan",
-        Cell: ({ value }) => {
-          return value.map((el, index) => {
-            let splitter;
-            splitter = index + 1 === value.length ? "" : ", ";
-            return el.loan_id + splitter;
-          });
+        Header: "Member Applicant",
+        accessor: "firstName",
+        Cell: ({ row }) => {
+          const item = row.original;
+          const fullName = [item.firstName, item.middleName, item.lastName]
+            .filter(Boolean)
+            .join(" ");
+          const initials = [item.firstName?.[0], item.lastName?.[0]]
+            .filter(Boolean)
+            .join("")
+            .toUpperCase() || "MB";
+
+          return (
+            <div className="member-cell">
+              <div className="member-avatar-badge">{initials}</div>
+              <div className="member-details">
+                <span className="member-name">{fullName}</span>
+                <span className="member-email">{item.email}</span>
+              </div>
+            </div>
+          );
         },
       },
-      // { Header: "Phone Number", accessor: "phoneNumber" },
       {
-        Header: "Submitted Date",
+        Header: "Account Number",
+        accessor: "accountNumber",
+        Cell: ({ value }) => (
+          <span className="fw-semibold text-slate-800" style={{ fontFamily: "monospace", fontSize: 13.5 }}>
+            {value || "—"}
+          </span>
+        ),
+      },
+      {
+        Header: "Portal",
+        accessor: "website",
+        Cell: ({ value }) => {
+          const site = (value || "").toLowerCase();
+          const badgeClass =
+            site === "cpfcu"
+              ? "portal-cpfcu"
+              : site === "npcu"
+              ? "portal-npcu"
+              : "portal-generic";
+          return <span className={`portal-badge ${badgeClass}`}>{value || "DIRECT"}</span>;
+        },
+      },
+      {
+        Header: "Skipped Loan(s)",
+        accessor: "loan",
+        Cell: ({ value }) => {
+          if (!Array.isArray(value) || value.length === 0) {
+            return <span className="text-muted">—</span>;
+          }
+          return (
+            <div className="loan-chip-container">
+              {value.map((loanObj, idx) => (
+                <span key={loanObj._id || idx} className="loan-chip" title={loanObj.loan_type}>
+                  #{loanObj.loan_id || loanObj._id}
+                </span>
+              ))}
+            </div>
+          );
+        },
+      },
+      {
+        Header: "Submission Date",
         accessor: "createdAt",
-        Cell: ({ value }) => moment(value).format("MM/DD/YYYY, hh:mm a"),
+        Cell: ({ value }) => (
+          <span className="date-cell">
+            {value ? moment(value).format("MMM DD, YYYY • hh:mm A") : "—"}
+          </span>
+        ),
       },
       {
         Header: "Action",
         accessor: "_id",
-        Cell: ({ value }) => {
-          return (
-            <Button
-              onClick={handleDelete}
-              className="deletebtn"
-              variant="danger"
-              value={value}
-            >
-              <TrashIcon />
-            </Button>
-          );
-        },
+        Cell: ({ value }) => (
+          <button
+            type="button"
+            className="btn-row-delete"
+            title="Delete Application"
+            onClick={() => handleDeleteClick(value)}
+          >
+            <TrashIcon className="row-trash-icon" />
+          </button>
+        ),
       },
     ],
     []
   );
+
+  // Pagination calculation stats
+  const startItem = totalCount > 0 ? (skip - 1) * limit + 1 : 0;
+  const endItem = Math.min(skip * limit, totalCount);
+
   return (
-    <Card
-      title="Submitted Form"
-      actionElement={
-        !isLoading &&
-        data?.length > 0 && (
-          <Button variant="outline-danger" onClick={handleDelete}>
-            Delete All
-          </Button>
-        )
-      }
-    >
-      <div className="py-3">
+    <div className="submitted-form-page">
+      {/* 1. Header Card */}
+      <div className="page-header-card">
+        <div className="header-top-row">
+          <div className="header-title-group">
+            <div className="header-icon-box">
+              <DocumentCheckIcon className="header-icon" />
+            </div>
+            <div>
+              <h1 className="title-text">Submitted Applications</h1>
+              <p className="subtitle-text">
+                Review member skip-a-payment requests, filter timeframes, and export reports.
+              </p>
+            </div>
+          </div>
+
+          <div className="header-action-group">
+            {!isLoading && data.length > 0 && (
+              <button
+                type="button"
+                className="btn-delete-all"
+                onClick={() => handleDeleteClick("")}
+              >
+                <TrashIcon className="btn-trash-icon" />
+                <span>Delete All Records</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Filter & Search Toolbar */}
+      <div className="toolbar-card">
+        <div className="toolbar-row">
+          {/* Search Box */}
+          <div className="search-box-wrapper">
+            <MagnifyingGlassIcon className="search-icon" />
+            <input
+              type="text"
+              className="search-input-field"
+              placeholder="Search by name, account #, or email..."
+              value={searchInput}
+              onChange={handleSearchChange}
+            />
+          </div>
+
+          {/* Timeframe Filter Pills */}
+          <div className="filter-pills-group">
+            {filterOptions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`filter-pill-btn ${activeDaysFilter === opt.value ? "active" : ""}`}
+                onClick={() => handleFilter(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Export Dropdown */}
+          <div className="export-dropdown">
+            <Dropdown align="end">
+              <Dropdown.Toggle className="export-toggle-btn">
+                <ArrowDownTrayIcon className="export-icon" />
+                <span>Export CSV</span>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleDownload(0)}>
+                  All Application Records (.CSV)
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={() => handleDownload(7)}>
+                  Last 7 Days Only (.CSV)
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDownload(14)}>
+                  Last 14 Days Only (.CSV)
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDownload(30)}>
+                  Last 30 Days Only (.CSV)
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Table Container Card */}
+      <div className="table-card">
         {isLoading ? (
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-        ) : (
+          <div className="text-center py-5">
+            <Spinner animation="border" style={{ color: "var(--primary, #030359)" }} role="status" />
+            <p className="text-muted mt-2 mb-0" style={{ fontSize: 13 }}>
+              Loading applications...
+            </p>
+          </div>
+        ) : data.length > 0 ? (
           <>
-            <Stack direction="horizontal" gap={2} className="mb-2 flex-wrap">
-              <Input
-                name="search"
-                type="search"
-                placeholder="Search"
-                handleChange={handleSearch}
-                className="mb-0 flex-grow-1 flex-md-grow-0"
-                inputclassname="py-6"
-              />
-              <Dropdown>
-                <Dropdown.Toggle
-                  variant="light"
-                  id="dropdown-basic"
-                  className="border"
-                  style={{ background: "white" }}
-                >
-                  {filterLabel}
-                </Dropdown.Toggle>
+            <div className="table-responsive-wrapper">
+              <ReactTable data={data} columns={columns} />
+            </div>
 
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => handleFilter(0)}>
-                    Filter by Date
-                  </Dropdown.Item>
-                  {filterDays.map((days, index) => (
-                    <Dropdown.Item
-                      className={`${
-                        Number(filterDate?.value) === days ? "active" : ""
-                      }`}
-                      key={index}
-                      onClick={() => handleFilter(days)}
-                    >
-                      Last {days} Days
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-              {data?.length > 0 && (
-                <Dropdown>
-                  <Dropdown.Toggle
-                    variant="light"
-                    id="dropdown-basic"
-                    className="border"
-                    style={{ background: "white" }}
+            {/* Pagination Controls Footer */}
+            <div className="table-pagination-footer">
+              <div className="footer-left-controls">
+                {/* Rows per page dropdown */}
+                <div className="rows-per-page-group">
+                  <span>Show</span>
+                  <select
+                    className="rows-select-custom"
+                    value={limit}
+                    onChange={handleLimitChange}
                   >
-                    Download
-                  </Dropdown.Toggle>
+                    {pageSizeOptions.map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                  <span>per page</span>
+                </div>
 
-                  <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => handleDownload(0)}>
-                      All Data
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDownload(7)}>
-                      Last 7 days
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDownload(14)}>
-                      Last 14 days
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDownload(30)}>
-                      Last 30 days
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              )}
-            </Stack>
-            {data?.length > 0 && (
-              <>
-                <ReactTable data={data} columns={columns} />
-                <>
-                  <Stack
-                    direction="horizontal"
-                    className="flex-wrap justify-content-end"
-                  >
-                    {/* pagecount come from api where it will all pages */}
-                    {pageCount > 1 && (
-                      <>
-                        <CustomPagination
-                          count={pageCount}
-                          className={"mt-3"}
-                        />
-                        <Stack direction="horizontal">
-                          <span>Go to</span>
-                          <Input
-                            max={pageCount}
-                            min={1}
-                            type="number"
-                            handleChange={handleChangePageNumber}
-                            name="skip"
-                            placeholder="page"
-                            className="mb-0 custom-pagination"
-                          />
-                        </Stack>
-                      </>
-                    )}
-                  </Stack>
-                </>
-              </>
-            )}
-            {data?.length === 0 && (
-              <p>No form has been submitted yet or no form found.</p>
-            )}
+                <span className="results-count-text">
+                  Showing <strong>{startItem}</strong>-<strong>{endItem}</strong> of{" "}
+                  <strong>{totalCount}</strong> applications
+                </span>
+              </div>
+
+              <div className="footer-right-controls">
+                <CustomPagination count={pageCount} />
+
+                {pageCount > 1 && (
+                  <div className="page-jump-box d-none d-sm-flex">
+                    <span>Jump to:</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={pageCount}
+                      placeholder="Page"
+                      className="jump-input"
+                      onChange={handleChangePageNumber}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </>
+        ) : (
+          <div className="empty-state-container">
+            <div className="empty-icon-circle">
+              <InboxIcon className="empty-icon" />
+            </div>
+            <h3 className="empty-title">No Applications Found</h3>
+            <p className="empty-desc">
+              {searchInput || activeDaysFilter > 0
+                ? "No submission records match your active search criteria or timeframe filter."
+                : "No member applications have been submitted for this Skip-A-Payment campaign yet."}
+            </p>
+          </div>
         )}
       </div>
+
+      {/* 4. Delete Confirmation Modal */}
       <SubmitFormDeleteModal
         getAllUsers={getAllUsers}
         skip={skip}
         id={deleteId}
-        show={show}
-        handleClose={handleClose}
+        show={showDeleteModal}
+        handleClose={handleCloseDeleteModal}
       />
-    </Card>
+    </div>
   );
 };
 

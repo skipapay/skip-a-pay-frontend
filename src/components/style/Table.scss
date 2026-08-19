@@ -1,60 +1,98 @@
-/* Table.css */
-
+// Modern React Table Styling
 .table-container {
   overflow-x: auto;
+  width: 100%;
 
-  /* Enable horizontal scrolling */
-  th {
-    white-space: nowrap;
-    vertical-align: middle;
-
-    span {
-      display: inline-block;
-    }
-  }
-
-  th,
-  td {
-    vertical-align: middle;
-  }
-
-  .deletebtn {
-    --bs-btn-bg: transparent;
-    --bs-btn-color: rgb(190, 32, 32);
-    --bs-btn-active-bg: transparent;
-    --bs-btn-hover-bg: transparent;
-    --bs-btn-hover-color: hsl(0, 98%, 51%);
-    outline: none;
-    --bs-btn-border-color: none;
-    padding: 0;
-    text-align: center;
+  .table {
+    margin-bottom: 0;
     width: 100%;
-    margin: auto 0;
-    // transform: translateY(45%);
+    border-collapse: separate;
+    border-spacing: 0;
 
-    svg {
-      width: 22px;
+    thead {
+      background-color: #f8fafc;
+
+      tr {
+        th {
+          font-size: 11.5px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+          color: #475569;
+          padding: 14px 18px;
+          border-top: none;
+          border-bottom: 1.5px solid #e2e8f0;
+          border-left: none;
+          border-right: none;
+          white-space: nowrap;
+          vertical-align: middle;
+
+          &:first-child {
+            padding-left: 24px;
+          }
+
+          &:last-child {
+            padding-right: 24px;
+          }
+
+          .header-sort-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+
+            &:hover {
+              color: var(--primary, #030359);
+            }
+          }
+
+          .sort-icon {
+            color: #94a3b8;
+            transition: color 0.2s ease;
+
+            &.active {
+              color: var(--primary, #030359);
+            }
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        transition: background-color 0.15s ease;
+
+        &:hover {
+          background-color: #f8fafc;
+        }
+
+        td {
+          padding: 14px 18px;
+          font-size: 13.5px;
+          color: #1e293b;
+          vertical-align: middle;
+          border-top: none;
+          border-bottom: 1px solid #f1f5f9;
+          border-left: none;
+          border-right: none;
+
+          &:first-child {
+            padding-left: 24px;
+          }
+
+          &:last-child {
+            padding-right: 24px;
+          }
+        }
+
+        &:last-child {
+          td {
+            border-bottom: none;
+          }
+        }
+      }
     }
   }
 }
-
-
-/* Define different styles for different screen sizes */
-@media (max-width: 768px) {
-
-  /* Apply styles for small screens */
-  .table-container {
-    max-width: 100%;
-
-    th {
-      min-width: 170px;
-    }
-  }
-}
-
-// @media (min-width: 1920px) {
-//   /* Apply styles for large screens */
-//   .table-container {
-//     max-width: 60%;
-//   }
-// }

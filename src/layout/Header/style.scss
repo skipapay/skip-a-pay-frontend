@@ -1,76 +1,206 @@
+// Modern Top Header Navbar
 .top-navbar {
-  padding: 10px 25px;
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 
   .toggle-btn {
-    padding: 5px;
-    background: var(--light);
-    border-radius: 4px;
-    box-shadow: 1px 1px 10px rgba($color: #000000, $alpha: 0.04);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease;
 
     &:hover {
-      background: var(--primary);
-      color: var(--light);
+      background: #f1f5f9;
+      color: var(--primary, #030359);
+      border-color: #cbd5e1;
+      transform: scale(1.02);
     }
 
     svg {
-      width: 25px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .portal-header-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary, #030359);
+    background: #eff6ff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #dbeafe;
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
     }
   }
 
   .profile {
     position: relative;
 
-    svg {
-      width: 35px;
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      padding: 5px 12px 5px 6px;
+      border-radius: 30px;
+      border: 1.5px solid #e2e8f0;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+      }
+
+      .profile-avatar-initials {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary, #030359) 0%, var(--purple, #4d17bd) 100%);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 12.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .profile-name-text {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #0f172a;
+      }
     }
 
-    &-dropdown {
+    .profile-dropdown {
       position: absolute;
       display: none;
       right: 0;
-      width: 215px;
-      background: var(--light);
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid rgba($color: #000000, $alpha: 0.1);
-      box-shadow: 5px 5px 10px rgba($color: #000000, $alpha: 0.05);
+      top: calc(100% + 8px);
+      width: 230px;
+      background: #ffffff;
+      padding: 8px;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      z-index: 1000;
+
+      // Invisible bridge to ensure hover transition never drops
+      &::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        left: 0;
+        width: 100%;
+        height: 12px;
+      }
+
+      .dropdown-user-header {
+        padding: 10px 12px 8px;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 4px;
+
+        .user-name-title {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1.2;
+        }
+
+        .user-role-subtitle {
+          font-size: 11.5px;
+          color: #64748b;
+        }
+      }
 
       ul {
         padding: 0;
         margin: 0;
+        list-style: none;
 
         li {
-          list-style: none;
-          padding: 10px 15px;
-          transition: background 100ms ease-in;
+          padding: 9px 12px;
+          border-radius: 8px;
+          transition: all 0.15s ease;
           cursor: pointer;
-          border-radius: 5px;
+          font-size: 13px;
+          font-weight: 500;
+          color: #334155;
 
           &:hover {
-            background-color: rgba($color: #000000, $alpha: 0.05);
+            background-color: #f1f5f9;
+            color: var(--primary, #030359);
           }
 
-          a {
-            color: var(--dark);
-            text-decoration: none;
+          .auth-menu-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .menu-icon {
+              width: 16px;
+              height: 16px;
+              color: #64748b;
+            }
           }
 
-          .auth {
-            svg {
-              width: 20px;
+          &.logout-item {
+            color: #dc2626;
+
+            .menu-icon {
+              color: #dc2626;
+            }
+
+            &:hover {
+              background: #fee2e2;
+              color: #b91c1c;
             }
           }
         }
       }
     }
 
-    &:is(:hover, :focus, :target) .profile-dropdown {
+    // Toggle open via state class
+    &.is-open .profile-dropdown {
       display: block;
+      animation: dropdownFade 0.15s ease;
     }
+  }
+}
 
-    // dropdown
-    .profile-dropdown {
-      z-index: 1;
-    }
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

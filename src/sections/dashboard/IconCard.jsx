@@ -1,44 +1,84 @@
 import React from "react";
-import { Stack } from "react-bootstrap";
-import "./icon-card.scss";
+import PropTypes from "prop-types";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import "./icon-card.scss";
 
-const IconCard = ({ title, subtitle, smallTitle, icon, ...props }) => {
+const IconCard = ({
+  title,
+  subtitle,
+  smallTitle,
+  icon: Icon,
+  badgeText,
+  variant = "primary",
+  to,
+  description,
+}) => {
   const navigate = useNavigate();
-  let Icon = icon;
+
+  const handleCardClick = () => {
+    if (to) {
+      navigate(to);
+    }
+  };
+
   return (
-    <Stack
-      className="icon-card align-items-center justify-content-center"
-      style={{
-        "--bg": props.backgroundColor ? props.backgroundColor : "var(--blue)",
-        cursor: props.to ? "pointer" : "",
-      }}
-      onClick={() => {
-        if (props.to) {
-          navigate(props.to);
+    <div
+      className={`modern-stat-card variant-${variant} ${to ? "is-clickable" : ""}`}
+      onClick={handleCardClick}
+      role={to ? "button" : undefined}
+      tabIndex={to ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (to && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          navigate(to);
         }
       }}
     >
-      <span className="circle"></span>
-      <span className="circle"></span>
-      <Stack direction="horizontal" className="content" gap={3}>
-        {icon && (
-          <div className="icon">
-            <Icon />
+      <div className="card-top-row">
+        <div className="stat-icon-wrapper">
+          {Icon && <Icon className="stat-icon" />}
+        </div>
+        {badgeText && <span className="stat-badge">{badgeText}</span>}
+      </div>
+
+      <div className="stat-content">
+        <div className="stat-label-group">
+          <span className="stat-title">{title}</span>
+          {smallTitle && <span className="stat-small-title">{smallTitle}</span>}
+        </div>
+
+        {subtitle !== undefined && (
+          <div className="stat-value-row">
+            <span className="stat-value">{subtitle}</span>
           </div>
         )}
-        <div className="text">
-          {title && (
-            <p className="title">
-              {title}{" "}
-              {smallTitle && <span className="small-title">{smallTitle}</span>}
-            </p>
-          )}
-          {subtitle && <p className="subtitle">{subtitle}</p>}
+
+        {description && <p className="stat-description mb-0">{description}</p>}
+      </div>
+
+      {to && (
+        <div className="card-action-footer">
+          <span className="action-text">View Details</span>
+          <ArrowRightIcon className="action-icon" />
         </div>
-      </Stack>
-    </Stack>
+      )}
+
+      {/* Decorative ambient background orb */}
+      <div className="card-ambient-glow" />
+    </div>
   );
+};
+
+IconCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  smallTitle: PropTypes.string,
+  icon: PropTypes.elementType,
+  badgeText: PropTypes.string,
+  variant: PropTypes.oneOf(["primary", "blue", "purple", "emerald", "amber", "indigo"]),
+  to: PropTypes.string,
+  description: PropTypes.string,
 };
 
 export default IconCard;

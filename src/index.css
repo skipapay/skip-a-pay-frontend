@@ -120,6 +120,13 @@ body {
   --bs-btn-hover-bg: var(--primary-hover) !important;
 }
 
+/* Brand Spinner Colors */
+.spinner-border,
+.spinner-grow,
+.text-primary {
+  color: var(--primary, #030359) !important;
+}
+
 @media screen and (max-width: 992px) {
   :root {
     --sidebar: 70px;
