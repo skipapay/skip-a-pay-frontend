@@ -76,7 +76,7 @@ const Settings = () => {
             <div>
               <h1 className="title-text">Loan Data Ingestion & Settings</h1>
               <p className="subtitle-text">
-                Upload member loan rosters to update eligible accounts for active Skip-A-Payment campaigns.
+                Upload member loan rosters to update eligible accounts for active Skip A Pay campaigns.
               </p>
             </div>
           </div>

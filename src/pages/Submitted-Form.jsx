@@ -331,7 +331,7 @@ const SubmittedForm = () => {
             <div>
               <h1 className="title-text">Submitted Applications</h1>
               <p className="subtitle-text">
-                Review member skip-a-payment requests, filter timeframes, and export reports.
+                Review member Skip A Pay requests, filter timeframes, and export reports.
               </p>
             </div>
           </div>

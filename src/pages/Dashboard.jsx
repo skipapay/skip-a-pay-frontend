@@ -80,7 +80,7 @@ const Dashboard = () => {
             </div>
             <h1 className="banner-title">Welcome back, {adminName} 👋</h1>
             <p className="banner-subtitle">
-              Here is your latest Skip-A-Payment campaign summary, active loan rosters, and submission analytics.
+              Here is your latest Skip A Pay campaign summary, active loan rosters, and submission analytics.
             </p>
           </Col>
 
