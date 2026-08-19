@@ -12,6 +12,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
+import "./style/Modal.scss";
 
 const ChangePasswordModal = ({ show, handleClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +73,7 @@ const ChangePasswordModal = ({ show, handleClose }) => {
       <Modal.Header closeButton className="modal-header-custom">
         <div className="d-flex align-items-center gap-3">
           <div className="header-icon-badge" style={{ background: "linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%)", color: "#4d17bd" }}>
-            <KeyIcon className="header-icon" />
+            <KeyIcon className="header-icon" style={{ width: 22, height: 22 }} />
           </div>
           <div>
             <Modal.Title id="change-password-title" className="modal-title-text">
@@ -236,7 +237,7 @@ const ChangePasswordModal = ({ show, handleClose }) => {
               </>
             ) : (
               <>
-                <CheckIcon className="btn-icon" />
+                <CheckIcon className="btn-icon" style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Update Password
               </>
             )}

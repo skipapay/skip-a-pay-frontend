@@ -9,10 +9,9 @@ import updateAdmin from "api/admin/updateAdmin";
 import { updateUser } from "features/auth/authSlice";
 import {
   UserCircleIcon,
-  EnvelopeIcon,
   CheckIcon,
-  UserIcon,
 } from "@heroicons/react/24/outline";
+import "./style/Modal.scss";
 
 const UpdateUserModal = ({ show, handleClose }) => {
   const { user } = useSelector((state) => state.auth);
@@ -71,7 +70,7 @@ const UpdateUserModal = ({ show, handleClose }) => {
       <Modal.Header closeButton className="modal-header-custom">
         <div className="d-flex align-items-center gap-3">
           <div className="header-icon-badge">
-            <UserCircleIcon className="header-icon" />
+            <UserCircleIcon className="header-icon" style={{ width: 22, height: 22 }} />
           </div>
           <div>
             <Modal.Title id="update-user-title" className="modal-title-text">
@@ -159,7 +158,7 @@ const UpdateUserModal = ({ show, handleClose }) => {
               </>
             ) : (
               <>
-                <CheckIcon className="btn-icon" />
+                <CheckIcon className="btn-icon" style={{ width: 16, height: 16, flexShrink: 0 }} />
                 Save Changes
               </>
             )}
