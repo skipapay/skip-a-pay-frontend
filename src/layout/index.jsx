@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import config from "../config/config";
 import Loader from "components/Loader";
+import TopLoadingBar from "components/TopLoadingBar";
 
 const Sidebar = lazy(() => import("./Sidebar"));
 
@@ -55,6 +56,9 @@ const Layout = () => {
 
   return (
     <Suspense fallback={<Loader />}>
+      {/* Top Loading Progress Bar across dashboard route navigation */}
+      <TopLoadingBar />
+
       <div
         style={{
           paddingLeft: "var(--sidebar, 270px)",
@@ -66,7 +70,9 @@ const Layout = () => {
         <Sidebar handleSidebar={handleSidebarToggle} isOpenSidebar={isSidebarOpen} />
         <Header handleClick={handleSidebarToggle} />
         <main style={{ padding: "28px 24px" }}>
-          <Outlet />
+          <Suspense fallback={<TopLoadingBar isIndeterminate={true} />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </Suspense>
