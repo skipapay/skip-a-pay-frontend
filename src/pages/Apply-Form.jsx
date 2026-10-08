@@ -55,7 +55,7 @@ const ApplyForm = ({ website }) => {
     website === "cpfcu"
       ? "National Police FCU Portal"
       : website === "npcu"
-      ? "National Police CU"
+      ? "National Police FCU Portal"
       : "Credit Union";
 
   // Step 1 Validation Schema: Verification
@@ -890,9 +890,9 @@ const ApplyForm = ({ website }) => {
               <CheckCircleSolid className="receipt-big-check" />
             </div>
 
-            <h2 className="receipt-title">Skip A Pay Confirmed!</h2>
+            <h2 className="receipt-title">Skip A Pay Pre-Approved</h2>
             <p className="receipt-subtitle">
-              Your request has been successfully recorded and submitted to {institutionName}. A confirmation has been registered for your account.
+              Your request has been successfully recorded and submitted to National Police FCU. A submission has been registered for your account. Skip A Pay will be processed the week of November 23rd. Please make sure to stay in good standing so the skip a pay can be applied. You will receive an email confirmation during the week of November 23rd.
             </p>
 
             <div className="receipt-details-card">
@@ -917,8 +917,8 @@ const ApplyForm = ({ website }) => {
 
               <div className="receipt-skipped-loans-heading">
                 <CheckBadgeIcon style={{ width: 18, height: 18, color: "#16a34a" }} />
-                <span>Successfully Skipped Loan(s)</span>
-                <span className="badge-count">{submittedLoansData.length} Skipped</span>
+                <span>Successfully Applied Loans(s)</span>
+                <span className="badge-count">{submittedLoansData.length} Applied</span>
               </div>
 
               {submittedLoansData.map((loan, idx) => (
