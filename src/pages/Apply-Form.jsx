@@ -53,9 +53,9 @@ const ApplyForm = ({ website }) => {
   // Institution title mapping
   const institutionName =
     website === "cpfcu"
-      ? "Central Penn FCU"
+      ? "National Police FCU Portal"
       : website === "npcu"
-      ? "North Penn CU"
+      ? "National Police CU"
       : "Credit Union";
 
   // Step 1 Validation Schema: Verification
@@ -705,7 +705,7 @@ const ApplyForm = ({ website }) => {
                   <div className="d-flex align-items-center gap-2 mb-2">
                     <LockClosedIcon style={{ width: 16, height: 16, color: "#64748b" }} />
                     <h4 className="section-title text-muted mb-0" style={{ fontSize: 14 }}>
-                      Previously Skipped Loans ({appliedLoans.length})
+                      Previously Submitted Loans ({appliedLoans.length})
                     </h4>
                     <span className="text-muted ms-auto" style={{ fontSize: 12 }}>
                       Already processed for this cycle
@@ -733,7 +733,7 @@ const ApplyForm = ({ website }) => {
                               </div>
                             </div>
                             <span className="badge bg-secondary px-2 py-1" style={{ fontSize: 11 }}>
-                              Already Skipped
+                              Already Applied
                             </span>
                           </div>
                         </Col>
