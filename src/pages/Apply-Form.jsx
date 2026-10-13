@@ -349,7 +349,7 @@ const ApplyForm = ({ website }) => {
           <div className="banner-top-row">
             <div className="brand-badge">
               <BanknotesIcon className="badge-icon" />
-              <span>{institutionName} Portal</span>
+              <span>{institutionName}</span>
             </div>
             
           </div>
