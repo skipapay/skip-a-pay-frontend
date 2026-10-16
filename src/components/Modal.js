@@ -142,7 +142,7 @@ const CustomModal = (props) => {
               </div>
               <div>
                 <Modal.Title id="skip-modal-title" className="modal-title-text text-success-emphasis">
-                  Application Confirmed
+                  Application Notification
                 </Modal.Title>
                 <p className="modal-subtitle-text mb-0">
                   Your Skip-A-Payment request has been successfully recorded
@@ -191,7 +191,7 @@ const CustomModal = (props) => {
                               </span>
                             </div>
                             <span className="confirmed-pill">
-                              <CheckCircleSolid className="check-icon-mini" /> Skipped
+                              <CheckCircleSolid className="check-icon-mini" /> Applied
                             </span>
                           </div>
 
@@ -214,7 +214,7 @@ const CustomModal = (props) => {
 
               {/* Applicant & Reference Metadata Card */}
               <div className="applicant-profile-card">
-                <h5 className="summary-card-subheading mb-3">Confirmation Reference</h5>
+                <h5 className="summary-card-subheading mb-3">Notification Reference</h5>
                 <Row className="g-2">
                   <Col xs={12} sm={6}>
                     <ModalComponent1
@@ -226,7 +226,7 @@ const CustomModal = (props) => {
                   <Col xs={12} sm={6}>
                     <ModalComponent1
                       icon={EnvelopeIcon}
-                      title="Confirmation Sent To"
+                      title="Notification Sent To"
                       subtitle={userDetails?.email}
                     />
                   </Col>

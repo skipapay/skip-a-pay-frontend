@@ -389,7 +389,7 @@ const ApplyForm = ({ website }) => {
 
           <div className={`step-node ${currentStep === 3 ? "active completed" : ""}`}>
             <div className="step-circle">3</div>
-            <span className="step-label">Confirmation Receipt</span>
+            <span className="step-label">Notification Receipt</span>
           </div>
         </div>
 
@@ -749,7 +749,7 @@ const ApplyForm = ({ website }) => {
                   <div className="section-icon-box">
                     <EnvelopeIcon className="sec-header-icon" />
                   </div>
-                  <h2 className="section-title">Contact & Confirmation Delivery</h2>
+                  <h2 className="section-title">Contact & Notification Delivery</h2>
                   <span className="section-hint">Where to send receipt</span>
                 </div>
 
@@ -829,7 +829,7 @@ const ApplyForm = ({ website }) => {
                   onChange={handleChange}
                   label={
                     <span style={{ fontSize: 13, color: "#334155" }}>
-                      I authorize the credit union to skip my selected loan payment(s). I understand interest continues to accrue during the skipped period.
+                      I authorize the credit union to skip my selected loan payment(s). I understand interest continues to accrue during the skipped period.  I understand a $30 fee will be added to the balance of the loan and I am responsible to verify that any automatic payment is stopped and restarted.
                     </span>
                   }
                   isInvalid={touched.agreedToTerms && !!errors.agreedToTerms}
@@ -892,7 +892,7 @@ const ApplyForm = ({ website }) => {
 
             <h2 className="receipt-title">Skip A Pay Pre-Approved</h2>
             <p className="receipt-subtitle">
-              Your request has been successfully recorded and submitted to National Police FCU. A submission has been registered for your account. Skip A Pay will be processed the week of November 23rd. Please make sure to stay in good standing so the skip a pay can be applied. You will receive an email confirmation during the week of November 23rd.
+              Your request has been successfully recorded and submitted to National Police FCU. A submission has been registered for your account. Skip A Pay will be processed the week of November 23rd. Please make sure to stay in good standing so the skip a pay can be applied. You will receive an email notification during the week of November 23rd.
             </p>
 
             <div className="receipt-details-card">
@@ -917,7 +917,7 @@ const ApplyForm = ({ website }) => {
 
               <div className="receipt-skipped-loans-heading">
                 <CheckBadgeIcon style={{ width: 18, height: 18, color: "#16a34a" }} />
-                <span>Successfully Applied Loans(s)</span>
+                <span>Successfully Applied Loan(s)</span>
                 <span className="badge-count">{submittedLoansData.length} Applied</span>
               </div>
 
@@ -928,7 +928,7 @@ const ApplyForm = ({ website }) => {
                     <div className="pill-id-chip">#{loan.loan_id || loan._id} • {loan.Description || loan.description || "General Skip"}</div>
                   </div>
                   <span className="pill-status-done">
-                    <CheckCircleSolid style={{ width: 16, height: 16 }} /> Skipped
+                    <CheckCircleSolid style={{ width: 16, height: 16 }} /> Applied
                   </span>
                 </div>
               ))}
@@ -941,7 +941,7 @@ const ApplyForm = ({ website }) => {
                 onClick={() => window.print()}
               >
                 <PrinterIcon className="btn-icon" />
-                Print Confirmation
+                Print Notification
               </button>
 
               <button
