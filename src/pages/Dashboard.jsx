@@ -23,6 +23,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
 import "./dashboard.scss";
+import { formatFullName } from "util/formatName";
 
 const Dashboard = () => {
   const { submittedFormsCount: loanCount = [0, 0], accountsCount = 0, user } = useSelector(
@@ -65,7 +66,7 @@ const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const adminName = user?.name || "Administrator";
+  const adminName = formatFullName(user?.name) || "Administrator";
   const currentDate = moment().format("dddd, MMMM DD, YYYY");
 
   return (

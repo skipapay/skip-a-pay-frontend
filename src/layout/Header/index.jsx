@@ -13,6 +13,7 @@ import { logout, reset } from "features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import ChangePasswordModal from "components/ChangePasswordModal";
 import UpdateUserModal from "components/UpdateUserModal";
+import { formatFullName, getInitials } from "util/formatName";
 
 const Header = ({ handleClick }) => {
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -56,13 +57,8 @@ const Header = ({ handleClick }) => {
     navigate("/login");
   };
 
-  const adminName = user?.name || "Administrator";
-  const initials = adminName
-    .split(" ")
-    .map((n) => n[0])
-    .filter(Boolean)
-    .join("")
-    .toUpperCase() || "AD";
+  const adminName = formatFullName(user?.name) || "Administrator";
+  const initials = getInitials(adminName, undefined, "AD");
 
   return (
     <header className="top-navbar">

@@ -22,6 +22,7 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/24/solid";
+import { formatFullName, getInitials } from "util/formatName";
 
 /**
  * CustomModal is a custom React modal component for reviewing applicant info,
@@ -59,14 +60,19 @@ const CustomModal = (props) => {
   }, [availableLoans, isSubmittedSuccess]);
 
   // Applicant full name
-  const nameParts = [userDetails?.firstName, userDetails?.middleName, userDetails?.lastName].filter(Boolean);
-  const fullName = nameParts.length > 0 ? nameParts.join(" ") : "Applicant Details";
+  const fullName =
+    formatFullName(
+      userDetails?.firstName,
+      userDetails?.middleName,
+      userDetails?.lastName
+    ) ||
+    formatFullName(userDetails?.name) ||
+    "Applicant Details";
 
   // Applicant initials for avatar badge
-  const initials = [userDetails?.firstName?.[0], userDetails?.lastName?.[0]]
-    .filter(Boolean)
-    .join("")
-    .toUpperCase() || "AP";
+  const initials =
+    getInitials(userDetails?.firstName, userDetails?.lastName) ||
+    getInitials(fullName, undefined, "AP");
 
   // Toggle individual loan selection
   const handleToggleLoan = (loanId) => {
