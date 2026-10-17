@@ -25,6 +25,7 @@ import {
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/24/solid";
+import { formatFullName, getInitials, cleanNamePart } from "util/formatName";
 
 // Helper: Phone Number Auto-Formatter
 const formatPhoneNumber = (value) => {
@@ -221,6 +222,9 @@ const ApplyForm = ({ website }) => {
         try {
           const payload = {
             ...values,
+            firstName: cleanNamePart(values.firstName),
+            middleName: cleanNamePart(values.middleName),
+            lastName: cleanNamePart(values.lastName),
             loan: selectedLoans,
           };
 
@@ -276,8 +280,8 @@ const ApplyForm = ({ website }) => {
   useEffect(() => {
     if (currentStep !== 1 || isLoading) return;
 
-    const fn = values.firstName?.trim() || "";
-    const ln = values.lastName?.trim() || "";
+    const fn = cleanNamePart(values.firstName);
+    const ln = cleanNamePart(values.lastName);
     const acc = values.accountNumber?.trim() || "";
     const ssn = values.ssnNumber?.trim() || "";
 
@@ -332,14 +336,9 @@ const ApplyForm = ({ website }) => {
     setCurrentStep(1);
   };
 
-  const fullName = [values.firstName, values.middleName, values.lastName]
-    .filter(Boolean)
-    .join(" ");
+  const fullName = formatFullName(values.firstName, values.middleName, values.lastName);
 
-  const initials = [values.firstName?.[0], values.lastName?.[0]]
-    .filter(Boolean)
-    .join("")
-    .toUpperCase() || "MB";
+  const initials = getInitials(values.firstName, values.lastName, "MB");
 
   return (
     <div className="apply-form-container">
@@ -437,7 +436,7 @@ const ApplyForm = ({ website }) => {
                         type="text"
                         name="middleName"
                         placeholder="e.g. M."
-                        value={values.middleName}
+                        value={cleanNamePart(values.middleName)}
                         onChange={handleChange}
                         className="form-control-custom shadow-none"
                       />
@@ -848,8 +847,8 @@ const ApplyForm = ({ website }) => {
                   variant="light"
                   className="btn-back-apply"
                   onClick={() => {
-                    const fn = values.firstName?.trim() || "";
-                    const ln = values.lastName?.trim() || "";
+                    const fn = cleanNamePart(values.firstName);
+                    const ln = cleanNamePart(values.lastName);
                     const acc = values.accountNumber?.trim() || "";
                     const ssn = values.ssnNumber?.trim() || "";
                     lastAttemptedLookup.current = `${fn.toLowerCase()}|${ln.toLowerCase()}|${acc}|${ssn}`;
@@ -899,7 +898,15 @@ const ApplyForm = ({ website }) => {
               <div className="receipt-grid-row">
                 <div className="meta-item">
                   <div className="meta-label">Applicant Name</div>
-                  <div className="meta-val">{fullName || confirmedDetails?.firstName}</div>
+                  <div className="meta-val">
+                    {fullName ||
+                      formatFullName(
+                        confirmedDetails?.firstName,
+                        confirmedDetails?.middleName,
+                        confirmedDetails?.lastName
+                      ) ||
+                      "Applicant"}
+                  </div>
                 </div>
                 <div className="meta-item">
                   <div className="meta-label">Account Number</div>

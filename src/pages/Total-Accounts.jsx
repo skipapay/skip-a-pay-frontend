@@ -18,6 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./totalAccounts.scss";
+import { formatFullName, getInitials } from "util/formatName";
 
 const TotalAccounts = () => {
   const navigate = useNavigate();
@@ -138,13 +139,8 @@ const TotalAccounts = () => {
         accessor: "name",
         Cell: ({ value, row }) => {
           const item = row.original;
-          const fullName = value || item.name || "Member Account";
-          const initials = (fullName || "")
-            .split(" ")
-            .map((n) => n[0])
-            .filter(Boolean)
-            .join("")
-            .toUpperCase() || "MB";
+          const fullName = formatFullName(value || item.name) || "Member Account";
+          const initials = getInitials(fullName, undefined, "MB");
 
           return (
             <div className="member-cell">

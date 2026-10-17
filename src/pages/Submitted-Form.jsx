@@ -20,6 +20,7 @@ import {
   InboxIcon,
 } from "@heroicons/react/24/outline";
 import "./submittedForm.scss";
+import { formatFullName, getInitials } from "util/formatName";
 
 const SubmittedForm = () => {
   const dispatch = useDispatch();
@@ -227,13 +228,13 @@ const SubmittedForm = () => {
         accessor: "firstName",
         Cell: ({ row }) => {
           const item = row.original;
-          const fullName = [item.firstName, item.middleName, item.lastName]
-            .filter(Boolean)
-            .join(" ");
-          const initials = [item.firstName?.[0], item.lastName?.[0]]
-            .filter(Boolean)
-            .join("")
-            .toUpperCase() || "MB";
+          const fullName =
+            formatFullName(item.firstName, item.middleName, item.lastName) ||
+            formatFullName(item.name) ||
+            "Member Applicant";
+          const initials =
+            getInitials(item.firstName, item.lastName) ||
+            getInitials(fullName, undefined, "MB");
 
           return (
             <div className="member-cell">
