@@ -30,8 +30,8 @@ export const cleanNamePart = (part) => {
  * or from a single full-name string.
  *
  * Examples:
- *   formatFullName("Sayed", "``", "Suhail") -> "Sayed Suhail"
- *   formatFullName("Sayed `` Suhail") -> "Sayed Suhail"
+ *   formatFullName("Suliman", "``", "Khan") -> "Suliman Khan"
+ *   formatFullName("Suliman `` Khan") -> "Suliman Khan"
  *   formatFullName("John", "A.", "Doe") -> "John A. Doe"
  */
 export const formatFullName = (firstOrFull, middle, last) => {
@@ -64,8 +64,8 @@ export const formatFullName = (firstOrFull, middle, last) => {
  * Extracts clean uppercase initials for avatar badges.
  *
  * Examples:
- *   getInitials("Sayed", "Suhail") -> "SS"
- *   getInitials("Sayed Suhail") -> "SS"
+ *   getInitials("Suliman", "Khan") -> "SK"
+ *   getInitials("Suliman Khan") -> "SK"
  */
 export const getInitials = (firstOrFull, last, fallback = "MB") => {
   if (last !== undefined) {
